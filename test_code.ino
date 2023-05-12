@@ -38,7 +38,6 @@ int minutos_0 = 100;
 int horas_1 = 100; 
 int minutos_1 = 100; 
 int numIntervals; 
-int timesOpened = 0; 
  
 class Interval {
   public:
@@ -112,6 +111,7 @@ void Mascota::feed(){
 
 Mascota pet; 
 Interval *intervals;
+bool *wasOpened; 
 
 void setup(){
   //Mensaje de bienvenida del display
@@ -226,12 +226,17 @@ void loop(){
       char nums = kpd.waitForKey(); 
 
       if (nums != NO_KEY){
-        timesOpened = 0; 
         numIntervals = nums - '0'; 
         Serial.print(numIntervals); 
         lcd.clear();
 
         intervals = (Interval*) malloc(numIntervals * sizeof(Interval)); 
+        wasOpened = (bool*) malloc(numIntervals * sizeof(bool)); 
+
+        //Al inicio todos los intervalos no se han abierto 
+        for (int i = 0; i < numIntervals; i++){
+          wasOpened[i] = false; 
+        }
 
       for (int i = 0; i < numIntervals; i++){
         Serial.println("dentro del for"); 
@@ -335,9 +340,9 @@ void loop(){
 
     if ((compareHours0 <= compareCurrent) && (compareCurrent <= compareHours1)){
       if (cm <= 15){
-        if (timesOpened <= 1){
+        if (!wasOpened[i]){
           pet.feed(); 
-          timesOpened += 1; 
+          wasOpened[i] = true; 
         }
       }
     }
